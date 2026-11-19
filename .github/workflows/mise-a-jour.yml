@@ -1,0 +1,30 @@
+name: Mettre à jour depuis SamEpic3/conduits3d
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  copier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer ce dépôt
+        uses: actions/checkout@v4
+
+      - name: Récupérer la version de développement
+        run: git clone --depth 1 https://github.com/SamEpic3/conduits3d /tmp/source
+
+      - name: Copier les fichiers de l'app
+        run: |
+          cp /tmp/source/index.html /tmp/source/cintreuse.html /tmp/source/sw.js /tmp/source/manifest.webmanifest .
+          mkdir -p icons
+          cp -r /tmp/source/icons/. icons/
+
+      - name: Enregistrer les changements
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && echo "Déjà à jour." || (git commit -m "Mise à jour depuis SamEpic3/conduits3d" && git push)
